@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PixelQuiz - Quiz Pemrograman Retro</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Pixel font from Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ===== LOADING SCREEN ===== -->
+  <div id="loading-screen">
+    <div class="loading-content">
+      <div class="pixel-logo">
+        <span class="logo-p">P</span><span class="logo-i">I</span><span class="logo-x">X</span><span class="logo-e">E</span><span class="logo-l">L</span>
+      </div>
+      <div class="loading-title">QUIZ</div>
+      <div class="loading-subtitle">PEMROGRAMAN EDITION</div>
+      <div class="loading-bar-wrap">
+        <div class="loading-bar" id="loading-bar"></div>
+      </div>
+      <div class="loading-text" id="loading-text">LOADING...</div>
+      <!-- Pixel Mario-style character -->
+      <div class="pixel-character loading-char">
+        <div class="char-body">
+          <div class="char-hat"></div>
+          <div class="char-face"></div>
+          <div class="char-torso"></div>
+          <div class="char-legs">
+            <div class="char-leg"></div>
+            <div class="char-leg"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Floating pixel stars -->
+      <div class="pixel-stars" id="pixel-stars"></div>
+    </div>
+  </div>
+
+  <!-- ===== HOME SCREEN ===== -->
+  <div id="home-screen" class="screen hidden">
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+    <div class="ground-row"></div>
+
+    <div class="home-container">
+      <div class="game-title">
+        <div class="title-line1">⭐ PIXEL ⭐</div>
+        <div class="title-line2">QUIZ</div>
+        <div class="title-sub">PEMROGRAMAN EDITION</div>
+      </div>
+
+      <div class="name-panel pixel-panel">
+        
+        <div class="panel-header">▼ MASUKKAN NAMA ▼</div>
+        <input type="text" id="player-name" class="pixel-input" placeholder="NAMA KAMU..." maxlength="20" autocomplete="off" />
+        <button class="pixel-btn btn-start" id="start-btn" onclick="startQuiz()">
+          <span>► MULAI TEST ◄</span>
+        </button>
+        <div class="input-error hidden" id="name-error">⚠ NAMA TIDAK BOLEH KOSONG!</div>
+
+        <!-- About Button -->
+        <button class="about-btn" onclick="goToAbout()" title="TENTANG APLIKASI">?</button>
+      </div>
+
+      <!-- Show history button if exists -->
+      <div id="history-preview" class="history-panel pixel-panel hidden">
+        <div class="panel-header">📜 HISTORI TERAKHIR</div>
+        <div id="history-list-home"></div>
+        <button class="pixel-btn btn-secondary" onclick="showHistoryModal()">LIHAT SEMUA HISTORI</button>
+      </div>
+
+      <!-- Decorative elements -->
+      <div class="home-decoration">
+        <div class="pixel-coin spin-coin">🪙</div>
+        <div class="pixel-coin spin-coin delay1">🪙</div>
+        <div class="pixel-coin spin-coin delay2">🪙</div>
+      </div>
+
+      <!-- Pixel mushroom decorations -->
+      <div class="mushroom left-mush">🍄</div>
+      <div class="mushroom right-mush">🍄</div>
+    </div>
+
+    <!-- History Modal -->
+    <div id="history-modal" class="modal-overlay hidden">
+      <div class="modal-box pixel-panel">
+        <div class="panel-header">📜 SEMUA HISTORI QUIZ</div>
+        <div id="history-modal-content"></div>
+        <button class="pixel-btn btn-danger" onclick="closeHistoryModal()">✕ TUTUP</button>
+      </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div id="review-modal" class="modal-overlay hidden">
+      <div class="modal-box modal-review pixel-panel">
+        <div class="panel-header">🔍 REVIEW JAWABAN</div>
+        <div id="review-content"></div>
+        <button class="pixel-btn btn-danger" onclick="closeReviewModal()">✕ TUTUP</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== QUIZ SCREEN ===== -->
+  <div id="quiz-screen" class="screen hidden">
+    <!-- Top HUD -->
+    <div class="quiz-hud">
+      <div class="hud-left">
+        <div class="hud-soal">SOAL KE <span id="current-q-display">1</span> DARI 20</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar" id="progress-bar"></div>
+          <div class="progress-text" id="progress-text">0%</div>
+        </div>
+      </div>
+      <div class="hud-center">
+        <div class="timer-box" id="timer-box">
+          <div class="timer-label">⏱ WAKTU</div>
+          <div class="timer-value" id="timer-display">30:00</div>
+        </div>
+      </div>
+      <div class="hud-right">
+        <div class="hud-name">👤 <span id="player-name-display"></span></div>
+        <div class="hud-score">⭐ NILAI: <span id="live-score">0</span></div>
+      </div>
+    </div>
+
+    <!-- Audio controls -->
+    <div class="audio-controls">
+      <button class="audio-btn" id="mute-btn" onclick="toggleMute()" title="Mute/Unmute">
+        🔊
+      </button>
+    </div>
+
+    <!-- Question area -->
+    <div class="quiz-body">
+      <!-- Question + Mario row -->
+      <div class="quiz-question-row">
+        <!-- Pixel Mario character -->
+        <div class="quiz-mario-col">
+          <div class="quiz-mario" id="quiz-mario">
+            <div class="mario-sprite">
+              <div class="m-hat-section">
+                <div class="m-hat-brim"></div>
+                <div class="m-hat-top"></div>
+              </div>
+              <div class="m-face-row">
+                <div class="m-face-skin">
+                  <div class="m-eyes-row">
+                    <div class="m-eye"></div>
+                    <div class="m-eye"></div>
+                  </div>
+                  <div class="m-nose"></div>
+                  <div class="m-mustache-row">
+                    <div class="m-mstch"></div>
+                    <div class="m-mstch"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="m-body-row">
+                <div class="m-arm-l"></div>
+                <div class="m-torso"></div>
+                <div class="m-arm-r"></div>
+              </div>
+              <div class="m-legs-row">
+                <div class="m-leg-l"></div>
+                <div class="m-gap"></div>
+                <div class="m-leg-r"></div>
+              </div>
+              <div class="m-shoes-row">
+                <div class="m-shoe-l"></div>
+                <div class="m-shoe-r"></div>
+              </div>
+            </div>
+            <div class="mario-speech" id="mario-speech">GAMBATE! 💪</div>
+          </div>
+        </div>
+
+        <!-- Question panel -->
+        <div class="question-panel pixel-panel" id="question-panel">
+          <div class="question-number" id="q-number">SOAL #1</div>
+          <div class="question-category" id="q-category">JAVASCRIPT</div>
+          <div class="question-text" id="q-text">Pertanyaan akan muncul di sini.</div>
+        </div>
+      </div>
+
+      <!-- Options -->
+      <div class="options-container" id="options-container">
+        <!-- Options injected by JS -->
+      </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="quiz-bottom">
+      <!-- Number navigation -->
+      <div class="num-nav" id="num-nav">
+        <!-- Numbers injected by JS -->
+      </div>
+
+      <!-- Action buttons -->
+      <div class="nav-buttons">
+        <button class="pixel-btn btn-nav" id="prev-btn" onclick="prevQuestion()">◀ PREV</button>
+        <button class="pixel-btn btn-submit" id="submit-btn" onclick="confirmSubmit()">🏁 SUBMIT</button>
+        <button class="pixel-btn btn-nav" id="next-btn" onclick="nextQuestion()">NEXT ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Submit Confirm Modal -->
+  <div id="submit-modal" class="modal-overlay hidden">
+    <div class="modal-box pixel-panel">
+      <div class="panel-header">⚠ KONFIRMASI SUBMIT</div>
+      <div class="confirm-text">
+        <p>Apakah kamu yakin ingin mengumpulkan jawaban?</p>
+        <p id="unanswered-info" class="unanswered-warn"></p>
+      </div>
+      <div class="confirm-buttons">
+        <button class="pixel-btn btn-danger" onclick="finalSubmit()">✅ YA, SUBMIT</button>
+        <button class="pixel-btn btn-secondary" onclick="closeSubmitModal()">↩ KEMBALI</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== RESULT SCREEN ===== -->
+  <div id="result-screen" class="screen hidden">
+    <div class="result-container">
+      <!-- Pixel confetti -->
+      <div id="confetti-container"></div>
+
+      <div class="result-panel pixel-panel" id="result-panel">
+        <div class="result-title">🏆 HASIL QUIZ 🏆</div>
+
+        <div class="result-name" id="result-name-display"></div>
+
+        <div class="result-score-box" id="result-score-box">
+          <div class="result-score" id="result-score">0</div>
+          <div class="result-score-label">NILAI AKHIR</div>
+        </div>
+
+        <div class="result-status" id="result-status"></div>
+
+        <div class="result-stats">
+          <div class="stat-item correct">
+            <div class="stat-icon">✅</div>
+            <div class="stat-num" id="stat-correct">0</div>
+            <div class="stat-label">BENAR</div>
+          </div>
+          <div class="stat-item wrong">
+            <div class="stat-icon">❌</div>
+            <div class="stat-num" id="stat-wrong">0</div>
+            <div class="stat-label">SALAH</div>
+          </div>
+          <div class="stat-item total">
+            <div class="stat-icon">📝</div>
+            <div class="stat-num">20</div>
+            <div class="stat-label">TOTAL</div>
+          </div>
+        </div>
+
+        <!-- Wrong questions list -->
+        <div id="wrong-list-section" class="wrong-section hidden">
+          <div class="wrong-title">❌ SOAL YANG SALAH:</div>
+          <div class="wrong-numbers" id="wrong-numbers"></div>
+        </div>
+
+        <!-- Result action buttons -->
+        <div class="result-buttons">
+          <button class="pixel-btn btn-start" onclick="restartQuiz()">🔄 MAIN LAGI</button>
+          <button class="pixel-btn btn-secondary" onclick="goHome()">🏠 HOME</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio elements (generated by JS oscillator - no external files needed) -->
+  <script src="script.js"></script>
+</body>
+</html>

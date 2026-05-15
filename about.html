@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PixelQuiz - About</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --pixel-green:      #2d8c2d;
+      --pixel-dark-green: #1a5c1a;
+      --pixel-yellow:     #f7c948;
+      --pixel-gold:       #e6a817;
+      --pixel-white:      #f5f0e8;
+      --pixel-cream:      #fff8e7;
+      --pixel-brown:      #8b4513;
+      --pixel-dark:       #1a1a2e;
+      --pixel-panel:      #16213e;
+      --pixel-panel2:     #0f3460;
+      --pixel-border:     #e0a020;
+      --pixel-shadow:     #0a0a1a;
+      --pixel-correct:    #27ae60;
+      --pixel-wrong:      #e74c3c;
+      --pixel-gray:       #7f8c8d;
+      --pixel-light-gray: #bdc3c7;
+      --font-pixel: 'Press Start 2P', monospace;
+      --font-vt:    'VT323', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; }
+
+    body {
+      font-family: var(--font-pixel);
+      color: var(--pixel-white);
+      min-height: 100vh;
+      overflow-x: hidden;
+      image-rendering: pixelated;
+    }
+
+    ::-webkit-scrollbar       { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--pixel-dark); }
+    ::-webkit-scrollbar-thumb { background: var(--pixel-border); border: 2px solid var(--pixel-dark); }
+
+    /* BG */
+    .bg-sky {
+      position: fixed; inset: 0; z-index: 0;
+      background: linear-gradient(180deg,
+        #1a1a2e 0%, #16213e 40%, #0f3460 68%,
+        #2d8c2d 68%, #1a5c1a 84%, #0a3010 100%
+      );
+    }
+    .stars-layer { position: fixed; top: 0; left: 0; width: 100%; height: 65%; z-index: 1; pointer-events: none; }
+    .star { position: absolute; background: #fff; animation: star-twinkle ease-in-out infinite alternate; }
+    @keyframes star-twinkle {
+      0%   { opacity: 0.1; transform: scale(0.7); }
+      100% { opacity: 1;   transform: scale(1.4); }
+    }
+
+    .cloud-layer { position: fixed; top: 4%; left: 0; right: 0; z-index: 2; pointer-events: none; }
+    .cloud {
+      position: absolute;
+      background: rgba(255,255,255,0.1);
+      clip-path: polygon(10% 60%,0% 60%,0% 100%,100% 100%,100% 60%,90% 60%,90% 30%,80% 30%,80% 10%,60% 10%,60% 30%,40% 30%,40% 10%,20% 10%,20% 30%,10% 30%);
+      animation: cloud-move linear infinite;
+    }
+    @keyframes cloud-move { 0% { transform: translateX(-200px); } 100% { transform: translateX(110vw); } }
+
+    .block-layer { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
+    .q-block {
+      position: absolute;
+      width: 36px; height: 36px;
+      background: var(--pixel-yellow);
+      border: 3px solid #000;
+      box-shadow: 3px 3px 0 var(--pixel-gold);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-pixel); font-size: 1rem; color: #000; font-weight: bold;
+      animation: block-float ease-in-out infinite alternate;
+    }
+    @keyframes block-float { 0% { transform: translateY(0); } 100% { transform: translateY(-10px); } }
+
+    .ground-fixed {
+      position: fixed; bottom: 0; left: 0; right: 0; height: 48px; z-index: 3;
+      background: repeating-linear-gradient(90deg, var(--pixel-brown) 0px, var(--pixel-brown) 40px, #6d3510 40px, #6d3510 80px);
+      border-top: 4px solid var(--pixel-yellow);
+    }
+
+    .pipe-wrap { position: fixed; bottom: 48px; z-index: 4; display: flex; flex-direction: column; align-items: center; pointer-events: none; }
+    .pipe-wrap.left  { left: 0; }
+    .pipe-wrap.right { right: 0; }
+    .pipe-top  { width: 52px; height: 18px; background: #27ae60; border: 3px solid #000; border-bottom: none; box-shadow: inset 4px 0 0 rgba(255,255,255,0.15); }
+    .pipe-body { width: 40px; height: 70px; background: #2ecc71; border: 3px solid #000; border-top: none; box-shadow: inset 4px 0 0 rgba(255,255,255,0.15); }
+
+    /* LAYOUT */
+    .page-wrapper {
+      position: relative; z-index: 10;
+      min-height: 100vh;
+      padding: 2rem 1rem 5rem;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 1.8rem;
+      max-width: 580px; margin: 0 auto;
+    }
+
+    /* BACK BTN */
+    .back-btn {
+      align-self: flex-start;
+      font-family: var(--font-pixel); font-size: 0.5rem;
+      background: var(--pixel-panel2); color: var(--pixel-yellow);
+      border: 3px solid var(--pixel-border);
+      padding: 0.6rem 1rem; cursor: pointer;
+      box-shadow: 4px 4px 0 #000; letter-spacing: 1px;
+      transition: transform 0.05s, box-shadow 0.05s;
+      text-decoration: none; display: inline-block;
+    }
+    .back-btn:hover  { transform: translate(-2px,-2px); filter: brightness(1.2); }
+    .back-btn:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 #000; }
+
+    /* TITLE */
+    .about-title-wrap { text-align: center; animation: title-drop 0.6s cubic-bezier(0.34,1.56,0.64,1) both; }
+    @keyframes title-drop {
+      0%   { opacity: 0; transform: translateY(-50px) scale(0.8); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .about-title-big {
+      font-family: var(--font-pixel);
+      font-size: clamp(1.6rem, 7vw, 3rem);
+      color: var(--pixel-yellow);
+      text-shadow: 4px 4px 0 var(--pixel-gold), 8px 8px 0 #000;
+      letter-spacing: 6px;
+      animation: glow-pulse 2s ease-in-out infinite;
+    }
+    @keyframes glow-pulse {
+      0%, 100% { text-shadow: 4px 4px 0 var(--pixel-gold), 0 0 20px rgba(247,201,72,0.3); }
+      50%       { text-shadow: 4px 4px 0 var(--pixel-gold), 0 0 40px rgba(247,201,72,0.9); }
+    }
+    .about-title-sub {
+      font-family: var(--font-pixel);
+      font-size: clamp(0.35rem, 1.4vw, 0.58rem);
+      color: var(--pixel-light-gray);
+      letter-spacing: 3px; margin-top: 0.5rem;
+      text-shadow: 2px 2px 0 #000;
+    }
+
+    /* PANEL */
+    .pixel-panel {
+      background: var(--pixel-panel);
+      border: 4px solid var(--pixel-border);
+      box-shadow: 6px 6px 0 var(--pixel-shadow), inset 0 0 0 2px rgba(255,255,255,0.04);
+      position: relative; width: 100%;
+      animation: panel-rise 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .pixel-panel::before {
+      content: ''; position: absolute;
+      top: 2px; left: 2px; right: 2px; height: 2px;
+      background: rgba(255,255,255,0.08); pointer-events: none;
+    }
+    @keyframes panel-rise {
+      0%   { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .panel-header {
+      font-family: var(--font-pixel);
+      font-size: clamp(0.48rem, 2vw, 0.7rem);
+      color: var(--pixel-yellow);
+      text-align: center;
+      padding: 0.75rem 1rem;
+      border-bottom: 3px solid var(--pixel-border);
+      background: rgba(0,0,0,0.3);
+      letter-spacing: 2px;
+    }
+
+    /* MARIO HERO */
+    .mario-hero {
+      display: flex; flex-direction: column;
+      align-items: center;
+      padding: 2.2rem 1rem 1.6rem;
+      gap: 1.2rem;
+    }
+
+    .mario-sprite {
+      display: flex; flex-direction: column; align-items: center;
+      image-rendering: pixelated;
+      transform: scale(2.5); transform-origin: top center;
+      margin-top: 0.5rem;
+      margin-bottom: 4rem;
+      animation: mario-idle 0.5s steps(2) infinite alternate;
+    }
+    @keyframes mario-idle {
+      0%   { transform: scale(2.5) translateY(0); }
+      100% { transform: scale(2.5) translateY(-4px); }
+    }
+
+    .m-hat-section { display: flex; flex-direction: column; align-items: center; }
+    .m-hat-brim { width: 36px; height: 6px; background: #d63031; border: 2px solid #000; border-bottom: none; }
+    .m-hat-top  { width: 28px; height: 10px; background: #d63031; border: 2px solid #000; margin-top: -2px; }
+
+    .m-face-row { display: flex; justify-content: center; }
+    .m-face-skin {
+      width: 30px; height: 22px; background: #f0c27f;
+      border: 2px solid #000; border-top: none;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: space-evenly; padding: 2px 3px;
+    }
+    .m-eyes-row     { display: flex; justify-content: space-between; width: 100%; padding: 0 2px; }
+    .m-eye          { width: 5px; height: 5px; background: #000; }
+    .m-nose         { width: 8px; height: 4px; background: #e59866; border: 1px solid #8b4513; }
+    .m-mustache-row { display: flex; gap: 2px; justify-content: center; }
+    .m-mstch        { width: 10px; height: 4px; background: #8b4513; }
+
+    .m-body-row { display: flex; align-items: center; margin-top: -1px; }
+    .m-torso { width: 26px; height: 16px; background: #e74c3c; border: 2px solid #000; border-top: none; }
+    .m-arm-l { width: 8px; height: 10px; background: #f0c27f; border: 2px solid #000; border-right: none; margin-top: 4px; animation: arm-wave 1s ease-in-out infinite alternate; }
+    .m-arm-r { width: 8px; height: 10px; background: #f0c27f; border: 2px solid #000; border-left: none;  margin-top: 4px; }
+    @keyframes arm-wave {
+      0%   { transform: translateY(0); }
+      100% { transform: translateY(-5px) rotate(-15deg); }
+    }
+
+    .m-legs-row { display: flex; gap: 4px; margin-top: -1px; }
+    .m-leg-l { width: 10px; height: 14px; background: #2980b9; border: 2px solid #000; border-top: none; animation: leg-l 0.4s steps(2) infinite; }
+    .m-leg-r { width: 10px; height: 14px; background: #2980b9; border: 2px solid #000; border-top: none; animation: leg-r 0.4s steps(2) infinite; }
+    @keyframes leg-l { 0% { transform: translateY(0); } 100% { transform: translateY(3px); } }
+    @keyframes leg-r { 0% { transform: translateY(3px); } 100% { transform: translateY(0); } }
+
+    .m-shoes-row { display: flex; gap: 6px; margin-top: -1px; }
+    .m-shoe-l { width: 14px; height: 6px; background: #8b4513; border: 2px solid #000; }
+    .m-shoe-r { width: 14px; height: 6px; background: #8b4513; border: 2px solid #000; }
+
+    .mario-speech {
+      background: var(--pixel-cream); color: var(--pixel-dark);
+      border: 3px solid #000;
+      padding: 0.6rem 1rem;
+      font-family: var(--font-pixel);
+      font-size: clamp(0.36rem, 1.3vw, 0.52rem);
+      text-align: center; line-height: 2;
+      box-shadow: 3px 3px 0 #000; position: relative;
+      animation: speech-pop 0.4s 0.8s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    @keyframes speech-pop {
+      0%   { opacity: 0; transform: scale(0.5); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    .mario-speech::before {
+      content: ''; position: absolute;
+      top: -12px; left: 50%; transform: translateX(-50%);
+      border: 6px solid transparent; border-bottom-color: #000;
+    }
+    .mario-speech::after {
+      content: ''; position: absolute;
+      top: -7px; left: 50%; transform: translateX(-50%);
+      border: 5px solid transparent; border-bottom-color: var(--pixel-cream);
+    }
+
+    /* SCORING */
+    .score-formula {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0.7rem; padding: 1.2rem 1rem; flex-wrap: wrap;
+    }
+    .formula-box {
+      background: rgba(0,0,0,0.35);
+      border: 3px solid var(--pixel-border);
+      padding: 0.7rem 1rem; text-align: center;
+      box-shadow: 3px 3px 0 #000;
+    }
+    .formula-icon  { font-size: 1.8rem; display: block; }
+    .formula-val   { font-family: var(--font-pixel); font-size: clamp(0.6rem, 2vw, 0.85rem); color: var(--pixel-yellow); display: block; margin-top: 0.3rem; }
+    .formula-label { font-family: var(--font-vt); font-size: clamp(0.9rem, 2.5vw, 1.1rem); color: var(--pixel-light-gray); display: block; }
+    .formula-op    { font-family: var(--font-pixel); font-size: clamp(1rem, 3vw, 1.3rem); color: var(--pixel-yellow); text-shadow: 2px 2px 0 #000; }
+
+    .grade-table {
+      width: 100%; border-collapse: collapse;
+      font-family: var(--font-vt); font-size: clamp(1rem, 3vw, 1.25rem);
+    }
+    .grade-table th {
+      font-family: var(--font-pixel); font-size: clamp(0.33rem, 1.2vw, 0.5rem);
+      color: var(--pixel-yellow); background: rgba(0,0,0,0.4);
+      padding: 0.55rem 0.7rem; border: 2px solid var(--pixel-border); letter-spacing: 1px;
+    }
+    .grade-table td { padding: 0.55rem 0.7rem; border: 2px solid rgba(224,160,32,0.25); color: var(--pixel-white); }
+    .grade-table tr:nth-child(even) td { background: rgba(255,255,255,0.04); }
+    .g-s { color: #f7c948; font-weight: bold; }
+    .g-a { color: #27ae60; }
+    .g-b { color: #3498db; }
+    .g-c { color: #e67e22; }
+    .g-d { color: #e74c3c; }
+    .ok   { color: var(--pixel-correct); }
+    .fail { color: var(--pixel-wrong); }
+
+    /* DEV CARD */
+    .dev-card {
+      display: flex; align-items: center;
+      gap: 1.8rem; padding: 1.5rem; flex-wrap: wrap;
+    }
+    .dev-avatar {
+      flex-shrink: 0;
+      transform: scale(1.5); transform-origin: top center;
+      margin-bottom: 1.5rem;
+    }
+    .av-hat  { width: 36px; height: 8px; background: var(--pixel-panel2); border: 2px solid var(--pixel-border); margin: 0 auto; }
+    .av-face {
+      width: 32px; height: 26px; background: #f0c27f;
+      border: 2px solid #000; border-top: none; margin: 0 auto;
+      display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; padding: 3px;
+    }
+    .av-eyes  { display: flex; justify-content: space-around; width: 100%; }
+    .av-eye   { width: 6px; height: 6px; background: #000; }
+    .av-smile { width: 16px; height: 5px; border-bottom: 3px solid #8b4513; border-radius: 0 0 8px 8px; margin: 0 auto; }
+    .av-body  { width: 40px; height: 20px; background: var(--pixel-green); border: 2px solid #000; border-top: none; margin: 0 auto; }
+    .av-legs  { display: flex; justify-content: center; gap: 4px; }
+    .av-leg   { width: 12px; height: 12px; background: var(--pixel-brown); border: 2px solid #000; }
+
+    .dev-info { flex: 1; min-width: 180px; }
+    .dev-name {
+      font-family: var(--font-pixel);
+      font-size: clamp(0.46rem, 1.8vw, 0.68rem);
+      color: var(--pixel-yellow); margin-bottom: 0.7rem; letter-spacing: 2px;
+    }
+    .dev-detail {
+      font-family: var(--font-vt);
+      font-size: clamp(1rem, 3vw, 1.25rem);
+      color: var(--pixel-light-gray); line-height: 1.8;
+    }
+    .dev-detail span { color: var(--pixel-yellow); }
+
+    /* FOOTER */
+    .about-footer {
+      text-align: center; font-family: var(--font-vt);
+      font-size: clamp(1rem, 3vw, 1.2rem); color: var(--pixel-gray);
+      animation: blink-slow 2s step-end infinite; padding-bottom: 0.5rem;
+    }
+    @keyframes blink-slow { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    @media (max-width: 460px) {
+      .mario-sprite { transform: scale(1.9); }
+      @keyframes mario-idle {
+        0%   { transform: scale(1.9) translateY(0); }
+        100% { transform: scale(1.9) translateY(-4px); }
+      }
+      .dev-avatar { transform: scale(1.2); }
+      .pipe-wrap  { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-sky"></div>
+  <div class="stars-layer" id="stars-layer"></div>
+  <div class="cloud-layer" id="cloud-layer"></div>
+  <div class="block-layer" id="block-layer"></div>
+  <div class="ground-fixed"></div>
+
+  <div class="pipe-wrap left">
+    <div class="pipe-top"></div>
+    <div class="pipe-body"></div>
+  </div>
+  <div class="pipe-wrap right">
+    <div class="pipe-top"></div>
+    <div class="pipe-body"></div>
+  </div>
+
+  <div class="page-wrapper">
+
+    <a href="index.html" class="back-btn">◀ KEMBALI</a>
+
+    <div class="about-title-wrap">
+      <div class="about-title-big">ABOUT</div>
+      <div class="about-title-sub">★ PIXELQUIZ PEMROGRAMAN EDITION ★</div>
+    </div>
+
+    <!-- Mario -->
+    <div class="pixel-panel" style="animation-delay:0.1s">
+      <div class="panel-header">🍄 QUIZ MASTER</div>
+      <div class="mario-hero">
+        <div class="mario-sprite">
+          <div class="m-hat-section">
+            <div class="m-hat-brim"></div>
+            <div class="m-hat-top"></div>
+          </div>
+          <div class="m-face-row">
+            <div class="m-face-skin">
+              <div class="m-eyes-row">
+                <div class="m-eye"></div>
+                <div class="m-eye"></div>
+              </div>
+              <div class="m-nose"></div>
+              <div class="m-mustache-row">
+                <div class="m-mstch"></div>
+                <div class="m-mstch"></div>
+              </div>
+            </div>
+          </div>
+          <div class="m-body-row">
+            <div class="m-arm-l"></div>
+            <div class="m-torso"></div>
+            <div class="m-arm-r"></div>
+          </div>
+          <div class="m-legs-row">
+            <div class="m-leg-l"></div>
+            <div style="width:4px"></div>
+            <div class="m-leg-r"></div>
+          </div>
+          <div class="m-shoes-row">
+            <div class="m-shoe-l"></div>
+            <div class="m-shoe-r"></div>
+          </div>
+        </div>
+        <div class="mario-speech">
+          SELAMAT DATANG DI PIXELQUIZ!<br/>
+          UJI KEMAMPUAN PEMROGRAMAN-MU<br/>
+          DAN RAIH GRADE TERTINGGI! ⭐
+        </div>
+      </div>
+    </div>
+
+    <!-- Scoring -->
+    <div class="pixel-panel" style="animation-delay:0.2s">
+      <div class="panel-header">🪙 SISTEM PENILAIAN</div>
+      <div class="score-formula">
+        <div class="formula-box">
+          <span class="formula-icon">🪙</span>
+          <span class="formula-val">5 POIN</span>
+          <span class="formula-label">per soal benar</span>
+        </div>
+        <div class="formula-op">×</div>
+        <div class="formula-box">
+          <span class="formula-icon">📝</span>
+          <span class="formula-val">20 SOAL</span>
+          <span class="formula-label">total soal</span>
+        </div>
+        <div class="formula-op">=</div>
+        <div class="formula-box">
+          <span class="formula-icon">🏆</span>
+          <span class="formula-val">100 MAX</span>
+          <span class="formula-label">nilai tertinggi</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Developer -->
+    <div class="pixel-panel" style="animation-delay:0.3s">
+      <div class="panel-header">👾 DEVELOPER</div>
+      <div class="dev-card">
+        <div class="dev-avatar">
+          <div class="av-hat"></div>
+          <div class="av-face">
+            <div class="av-eyes">
+              <div class="av-eye"></div>
+              <div class="av-eye"></div>
+            </div>
+            <div class="av-smile"></div>
+          </div>
+          <div class="av-body"></div>
+          <div class="av-legs">
+            <div class="av-leg"></div>
+            <div class="av-leg"></div>
+          </div>
+        </div>
+        <div class="dev-info">
+          <div class="dev-name">RAYHAN RAJEESHA</div>
+          <div class="dev-detail">
+            <span>📛</span> Nama: <span>Rayhan Rajeesha Wiguna</span><br/>
+            <span>🎓</span> Kelas: <span>XI RPL 1</span><br/>
+            <span>🏫</span> Sekolah: <span>SMKN 1 MAJA</span><br/>
+            <span>💡</span> Stack: <span>HTML · CSS · JavaScript</span><br/>
+            Dibuat dengan <span>FULL AI</span> &amp; semangat belajar <span>🍄✨</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-footer">★ PIXELQUIZ v1.0 — 2025 ★</div>
+
+  </div>
+
+  <script>
+    // Stars
+    const starsEl = document.getElementById('stars-layer');
+    for (let i = 0; i < 50; i++) {
+      const s = document.createElement('div');
+      s.className = 'star';
+      const sz = Math.random() * 3 + 1.5;
+      s.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;animation-delay:${Math.random()*3}s;animation-duration:${1.5+Math.random()*2}s;`;
+      starsEl.appendChild(s);
+    }
+
+    // Clouds
+    const cloudEl = document.getElementById('cloud-layer');
+    [{w:110,h:50,top:'6%',dur:30,dl:0},{w:80,h:36,top:'18%',dur:22,dl:-9},{w:140,h:60,top:'2%',dur:38,dl:-16},{w:70,h:32,top:'22%',dur:26,dl:-5}]
+    .forEach(c => {
+      const el = document.createElement('div');
+      el.className = 'cloud';
+      el.style.cssText = `width:${c.w}px;height:${c.h}px;top:${c.top};animation-duration:${c.dur}s;animation-delay:${c.dl}s;`;
+      cloudEl.appendChild(el);
+    });
+
+    // ? blocks
+    const blockEl = document.getElementById('block-layer');
+    [{top:'20%',left:'4%',dur:'2s',dl:'0s'},{top:'32%',left:'91%',dur:'2.6s',dl:'0.6s'},{top:'54%',left:'2%',dur:'1.9s',dl:'1s'},{top:'13%',left:'82%',dur:'2.3s',dl:'0.3s'}]
+    .forEach(p => {
+      const b = document.createElement('div');
+      b.className = 'q-block'; b.textContent = '?';
+      b.style.cssText = `top:${p.top};left:${p.left};animation-duration:${p.dur};animation-delay:${p.dl};`;
+      blockEl.appendChild(b);
+    });
+  </script>
+</body>
+</html>
