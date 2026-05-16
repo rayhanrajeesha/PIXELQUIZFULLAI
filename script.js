@@ -266,6 +266,7 @@ const STATE = {
   bgMusicNode: null,
   bgMusicGain: null,
   bgInterval: null,
+  activeOscillators: [],
   quizStarted: false,
 };
 
@@ -465,9 +466,7 @@ function renderQuestion(index) {
   document.getElementById('progress-bar').style.width = pct + '%';
   document.getElementById('progress-text').textContent = pct + '%';
 
-  // Update live score
-  const score = calcScore();
-  document.getElementById('live-score').textContent = score;
+  
 
   // Render options
   const container = document.getElementById('options-container');
@@ -521,7 +520,7 @@ function selectAnswer(qIndex, optIndex, btn) {
   const pct = Math.round((answered / 20) * 100);
   document.getElementById('progress-bar').style.width = pct + '%';
   document.getElementById('progress-text').textContent = pct + '%';
-  document.getElementById('live-score').textContent = calcScore();
+ 
 
   playBeep(660, 'sine', 0.2, 0.1);
 }
@@ -874,20 +873,36 @@ function playBeep(freq = 440, type = 'sine', vol = 0.2, duration = 0.1) {
 
 /* Play a simple melody note sequence */
 function playNote(ctx, freq, start, dur, type = 'square', vol = 0.15) {
-  if (!ctx) return;
+  if (!ctx || STATE.isMuted) return;
+
   try {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
+
     osc.connect(gain);
     gain.connect(ctx.destination);
+
     osc.type = type;
     osc.frequency.setValueAtTime(freq, ctx.currentTime + start);
+
     gain.gain.setValueAtTime(0, ctx.currentTime + start);
     gain.gain.linearRampToValueAtTime(vol, ctx.currentTime + start + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      ctx.currentTime + start + dur
+    );
+
     osc.start(ctx.currentTime + start);
     osc.stop(ctx.currentTime + start + dur + 0.05);
-  } catch (e) { }
+
+    STATE.activeOscillators.push(osc);
+
+    osc.onended = () => {
+      STATE.activeOscillators =
+        STATE.activeOscillators.filter(o => o !== osc);
+    };
+
+  } catch (e) {}
 }
 
 /* Background music - simple retro loop */
@@ -941,17 +956,31 @@ function stopBgMusic() {
     clearInterval(STATE.bgInterval);
     STATE.bgInterval = null;
   }
+
+  STATE.activeOscillators.forEach(osc => {
+    try {
+      osc.stop();
+    } catch (e) {}
+  });
+
+  STATE.activeOscillators = [];
 }
 
 function toggleMute() {
-  STATE.isMuted = !STATE.isMuted;
   const btn = document.getElementById('mute-btn');
+
+  STATE.isMuted = !STATE.isMuted;
+
   if (STATE.isMuted) {
     stopBgMusic();
     btn.textContent = '🔇';
   } else {
     btn.textContent = '🔊';
-    if (STATE.quizStarted) playBgMusic();
+
+    if (STATE.quizStarted) {
+      stopBgMusic();
+      playBgMusic();
+    }
   }
 }
 
