@@ -1173,6 +1173,80 @@ body {
 .review-answer.no-ans      { border-color: var(--pixel-gray);    color: var(--pixel-gray); }
 
 /* =============================================
+   REVIEW SUMMARY (ringkasan benar/salah)
+   ============================================= */
+.review-summary {
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.review-summary-name {
+  font-family: var(--font-pixel);
+  font-size: 0.6rem;
+  color: var(--pixel-yellow);
+}
+
+.review-summary-date {
+  font-family: var(--font-vt);
+  font-size: 1rem;
+  color: var(--pixel-gray);
+}
+
+.review-summary-score {
+  font-family: var(--font-pixel);
+  font-size: 0.55rem;
+  padding: 0.6rem 1.2rem;
+  border: 3px solid;
+  image-rendering: pixelated;
+}
+.review-lulus  { color: var(--pixel-correct); border-color: var(--pixel-correct); }
+.review-tidak  { color: var(--pixel-wrong);   border-color: var(--pixel-wrong); }
+
+.review-summary-stats {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.review-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.8rem 1.2rem;
+  border: 3px solid;
+  min-width: 80px;
+}
+
+.review-stat-icon { font-size: 1.5rem; }
+.review-stat-num  {
+  font-family: var(--font-pixel);
+  font-size: 1.2rem;
+}
+.review-stat-label {
+  font-family: var(--font-pixel);
+  font-size: 0.4rem;
+  color: var(--pixel-gray);
+}
+
+.review-stat-correct { border-color: var(--pixel-correct); color: var(--pixel-correct); }
+.review-stat-wrong   { border-color: var(--pixel-wrong);   color: var(--pixel-wrong); }
+.review-stat-total   { border-color: var(--pixel-blue);    color: var(--pixel-white); }
+
+.review-unanswered {
+  font-family: var(--font-vt);
+  font-size: 1rem;
+  color: var(--pixel-yellow);
+  margin-top: 0.3rem;
+}
+
+/* =============================================
    PIXEL CHARACTER (loading screen decoration)
    ============================================= */
 .pixel-character { display: inline-flex; flex-direction: column; align-items: center; }

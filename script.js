@@ -672,17 +672,9 @@ function showResultScreen(attempt, timeUp) {
   const scoreEl = document.getElementById('result-score');
   scoreEl.style.color = passed ? 'var(--pixel-correct)' : 'var(--pixel-wrong)';
 
-  // Wrong list
+  // Sembunyikan section nomor soal yang salah
   const wrongSection = document.getElementById('wrong-list-section');
-  const wrongNums = document.getElementById('wrong-numbers');
-  if (wrongList.length > 0) {
-    wrongSection.classList.remove('hidden');
-    wrongNums.innerHTML = wrongList.map(n =>
-      `<span class="wrong-num-badge">NO.${n}</span>`
-    ).join('');
-  } else {
-    wrongSection.classList.add('hidden');
-  }
+  if (wrongSection) wrongSection.classList.add('hidden');
 }
 
 function launchConfetti() {
@@ -808,32 +800,40 @@ function openReview(historyIndex) {
   const content = document.getElementById('review-content');
   content.innerHTML = '';
 
-  QUESTIONS.forEach((q, i) => {
-    const userAns = attempt.answers[i];
-    const isCorrect = userAns !== null && userAns === q.answer;
-    const hasAns = userAns !== null;
+  const correct = attempt.correct;
+  const wrong = attempt.wrong;
+  const unanswered = attempt.answers.filter(a => a === null).length;
+  const total = QUESTIONS.length;
+  const passed = attempt.passed;
 
-    const div = document.createElement('div');
-    div.className = 'review-item';
-
-    let ansText, ansClass;
-    if (!hasAns) {
-      ansText = 'Tidak dijawab';
-      ansClass = 'no-ans';
-    } else {
-      const label = LABELS[userAns];
-      const optText = q.options[userAns];
-      ansText = `${label}. ${optText} — ${isCorrect ? '✅ BENAR' : '❌ SALAH'}`;
-      ansClass = isCorrect ? 'correct-ans' : 'wrong-ans';
-    }
-
-    div.innerHTML = `
-      <div class="review-q-num">SOAL #${i + 1} — ${q.category}</div>
-      <div class="review-q-text">${escHtml(q.question)}</div>
-      <div class="review-answer ${ansClass}">${escHtml(ansText)}</div>
-    `;
-    content.appendChild(div);
-  });
+  const summary = document.createElement('div');
+  summary.className = 'review-summary';
+  summary.innerHTML = `
+    <div class="review-summary-name">👤 ${escHtml(attempt.name)}</div>
+    <div class="review-summary-date">📅 ${formatDate(attempt.date)}</div>
+    <div class="review-summary-score ${passed ? 'review-lulus' : 'review-tidak'}">
+      NILAI: ${attempt.score}/100 — ${passed ? '✅ LULUS' : '❌ TIDAK LULUS'}
+    </div>
+    <div class="review-summary-stats">
+      <div class="review-stat-item review-stat-correct">
+        <div class="review-stat-icon">✅</div>
+        <div class="review-stat-num">${correct}</div>
+        <div class="review-stat-label">BENAR</div>
+      </div>
+      <div class="review-stat-item review-stat-wrong">
+        <div class="review-stat-icon">❌</div>
+        <div class="review-stat-num">${wrong}</div>
+        <div class="review-stat-label">SALAH</div>
+      </div>
+      <div class="review-stat-item review-stat-total">
+        <div class="review-stat-icon">📝</div>
+        <div class="review-stat-num">${total}</div>
+        <div class="review-stat-label">TOTAL</div>
+      </div>
+    </div>
+    ${unanswered > 0 ? `<div class="review-unanswered">⚠ ${unanswered} soal tidak dijawab</div>` : ''}
+  `;
+  content.appendChild(summary);
 
   closeHistoryModal();
   modal.classList.remove('hidden');
